@@ -14,3 +14,17 @@ func UintParam(c *gin.Context, param string) (uint, error) {
 
 	return uint(value), nil
 }
+
+func UintQuery(c *gin.Context, param string, defaultValue uint) uint {
+	valueStr := c.Query(param)
+	if valueStr == "" {
+		return defaultValue
+	}
+
+	value, err := strconv.ParseUint(valueStr, 10, 32)
+	if err != nil {
+		return defaultValue
+	}
+
+	return uint(value)
+}

@@ -18,7 +18,8 @@ func NewHandler(services *services.Services) *Handler {
 }
 
 func (h *Handler) Index(c *gin.Context) {
-	instances, err := h.services.Product.GetProductsByTemplate(c.Request.Context(), 1)
+	templateID := handlers.UintQuery(c, "templateId", 0)
+	instances, err := h.services.Product.GetProductsByTemplate(c.Request.Context(), templateID)
 	if err != nil {
 		handlers.ErrorResponse(c, err)
 	}
