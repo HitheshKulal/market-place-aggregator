@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"go-backend-api/internal/logger"
+	"go-backend-api/internal/models"
 
 	"time"
 
@@ -17,12 +18,24 @@ func RunMigrations(db *gorm.DB) error {
 		name     string
 		migrator func(*gorm.DB) error
 	}{
-		// {
-		// 	name: "create_instance_tables",
-		// 	migrator: func(db *gorm.DB) error {
-		// 		return models.AutoMigrateInstance(db)
-		// 	},
-		// },
+		{
+			name: "create_product_table",
+			migrator: func(db *gorm.DB) error {
+				return models.AutoMigrateProduct(db)
+			},
+		},
+		{
+			name: "crate_mapping_table",
+			migrator: func(db *gorm.DB) error {
+				return models.AutoMigrateMapping(db)
+			},
+		},
+		{
+			name: "create_template_table",
+			migrator: func(db *gorm.DB) error {
+				return models.AutoMigrateTemplate(db)
+			},
+		},
 	}
 
 	for _, migration := range migrations {

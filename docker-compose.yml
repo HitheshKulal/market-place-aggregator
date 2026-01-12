@@ -36,7 +36,7 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./create-postgres-databases.sh:/docker-entrypoint-initdb.d/10-create-postgres-databases.sh
+      # - ./create-postgres-databases.sh:/docker-entrypoint-initdb.d/10-create-postgres-databases.sh
     networks:
       - go-project-network
     healthcheck:
