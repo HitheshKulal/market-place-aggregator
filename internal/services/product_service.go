@@ -323,6 +323,10 @@ func getInt(data map[string]interface{}, key string) *int64 {
 			if v == "" {
 				return nil
 			}
+			// Check if string contains decimal point - if yes, it's not a valid int
+			if strings.Contains(v, ".") {
+				return nil
+			}
 			var i int64
 			if _, err := fmt.Sscanf(v, "%d", &i); err == nil {
 				return &i
