@@ -10,7 +10,6 @@ import (
 	"go-backend-api/internal/repository"
 
 	"mime/multipart"
-	"strconv"
 	"strings"
 	"time"
 
@@ -112,40 +111,12 @@ func (s *ProductService) transformProduct(productData map[string]interface{}, fi
 }
 
 func (s *ProductService) UploadAndStoreProducts(c *gin.Context, file multipart.File, filename string) (*requests.UploadProductsResponse, error) {
-	// Parse CSV
-	reader := csv.NewReader(file)
-	reader.LazyQuotes = true
-	reader.TrimLeadingSpace = true
-
-	// Read all records
-	records, err := reader.ReadAll()
+	// Step 1: Extract CSV data
+	headers, dataRows, err := s.extractCSVData(file)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read CSV: %w", err)
+		return nil, err
 	}
 
-	if len(records) == 0 {
-		return nil, errors.New("CSV file is empty")
-	}
-
-	if len(records) < 2 {
-		return nil, errors.New("CSV file must have at least headers and one data row")
-	}
-
-	// First row is headers
-	headers := records[0]
-	// Trim whitespace from headers
-	for i, header := range headers {
-		headers[i] = strings.TrimSpace(header)
-	}
-
-	// Validate that headers are not empty
-	for _, header := range headers {
-		if header == "" {
-			return nil, errors.New("CSV contains empty column headers")
-		}
-	}
-
-	dataRows := records[1:]
 	response := &requests.UploadProductsResponse{
 		FileName:          filename,
 		TotalRows:         len(dataRows),
@@ -154,22 +125,18 @@ func (s *ProductService) UploadAndStoreProducts(c *gin.Context, file multipart.F
 		Errors:            make([]requests.ProductError, 0),
 	}
 
-	// Process each row
-	var createdProducts []map[string]interface{}
+	// Step 2: Map and validate each row
+	validatedProducts := make([]*models.Product, 0)
+	productMaps := make([]map[string]interface{}, 0)
 
 	for i, row := range dataRows {
 		rowNumber := i + 2 // +2 because: +1 for 0-index, +1 for header row
 
-		// Convert row to map
-		productData := make(map[string]interface{})
-		for j, value := range row {
-			if j < len(headers) {
-				productData[headers[j]] = strings.TrimSpace(value)
-			}
-		}
+		// Map CSV row to product data
+		productData := s.mapRowToProductData(headers, row)
 
-		// Create product
-		product, err := s.createProductFromMap(productData)
+		// Validate and create product
+		product, err := s.validateAndCreateProduct(productData)
 		if err != nil {
 			response.FailedCount++
 			response.Errors = append(response.Errors, requests.ProductError{
@@ -180,12 +147,19 @@ func (s *ProductService) UploadAndStoreProducts(c *gin.Context, file multipart.F
 			continue
 		}
 
-		// Store in database
-		err = s.repo.Create(c.Request.Context(), product)
+		validatedProducts = append(validatedProducts, product)
+		productMaps = append(productMaps, productData)
+	}
+
+	// Step 3: Store validated products
+	var createdProducts []map[string]interface{}
+
+	for i, product := range validatedProducts {
+		err := s.repo.Create(c.Request.Context(), product)
 		if err != nil {
 			response.FailedCount++
 			response.Errors = append(response.Errors, requests.ProductError{
-				Row:     rowNumber,
+				Row:     i + 2,
 				SKU:     product.SKU,
 				Message: fmt.Sprintf("Database error: %v", err),
 			})
@@ -216,25 +190,83 @@ func (s *ProductService) UploadAndStoreProducts(c *gin.Context, file multipart.F
 	return response, nil
 }
 
-func (s *ProductService) createProductFromMap(productData map[string]interface{}) (*models.Product, error) {
+// extractCSVData - Step 1: Extract and parse CSV file
+func (s *ProductService) extractCSVData(file multipart.File) ([]string, [][]string, error) {
+	reader := csv.NewReader(file)
+	reader.LazyQuotes = true
+	reader.TrimLeadingSpace = true
+
+	// Read all records
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to read CSV: %w", err)
+	}
+
+	if len(records) == 0 {
+		return nil, nil, errors.New("CSV file is empty")
+	}
+
+	if len(records) < 2 {
+		return nil, nil, errors.New("CSV file must have at least headers and one data row")
+	}
+
+	// First row is headers
+	headers := records[0]
+	// Trim whitespace from headers
+	for i, header := range headers {
+		headers[i] = strings.TrimSpace(header)
+	}
+
+	// Validate that headers are not empty
+	for _, header := range headers {
+		if header == "" {
+			return nil, nil, errors.New("CSV contains empty column headers")
+		}
+	}
+
+	dataRows := records[1:]
+	return headers, dataRows, nil
+}
+
+// mapRowToProductData - Step 2a: Map CSV row to product data structure
+func (s *ProductService) mapRowToProductData(headers []string, row []string) map[string]interface{} {
+	productData := make(map[string]interface{})
+	for j, value := range row {
+		if j < len(headers) {
+			productData[headers[j]] = strings.TrimSpace(value)
+		}
+	}
+	return productData
+}
+
+// validateAndCreateProduct - Step 2b: Validate product data and create product model
+func (s *ProductService) validateAndCreateProduct(productData map[string]interface{}) (*models.Product, error) {
 	product := &models.Product{
-		SKU:       getString(productData, "sku"),
-		Name:      getString(productData, "name"),
-		BrandName: getString(productData, "brand_name"),
-		Gender:    getString(productData, "gender"),
-		Category:  getString(productData, "category"),
-		Color:     getString(productData, "color"),
-		Size:      getString(productData, "size"),
-		MRP:       *getFloat(productData, "mrp"),
-		Price:     *getFloat(productData, "price"),
-		Material:  getString(productData, "material"),
-		Image1:    getString(productData, "image1"),
-		Image2:    getString(productData, "image2"),
-		// Quantity:    getInt(productData, "quantity"),
+		SKU:         getString(productData, "sku"),
+		Name:        getString(productData, "name"),
+		BrandName:   getString(productData, "brand_name"),
+		Gender:      getString(productData, "gender"),
+		Category:    getString(productData, "category"),
+		Color:       getString(productData, "color"),
+		Size:        getString(productData, "size"),
+		Material:    getString(productData, "material"),
+		Image1:      getString(productData, "image1"),
+		Image2:      getString(productData, "image2"),
 		Description: getString(productData, "description"),
 		Data:        models.JSONMap(productData),
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
+	}
+
+	// Handle numeric fields
+	if price := getFloat(productData, "price"); price != nil {
+		product.Price = *price
+	}
+	if mrp := getFloat(productData, "mrp"); mrp != nil {
+		product.MRP = *mrp
+	}
+	if qty := getInt(productData, "quantity"); qty != nil {
+		product.Quantity = int(*qty)
 	}
 
 	// Validate required fields
@@ -248,7 +280,6 @@ func (s *ProductService) createProductFromMap(productData map[string]interface{}
 	return product, nil
 }
 
-// Helper functions to safely extract values from map
 func getString(data map[string]interface{}, key string) string {
 	if val, ok := data[key]; ok && val != nil {
 		str := fmt.Sprintf("%v", val)
@@ -267,7 +298,8 @@ func getFloat(data map[string]interface{}, key string) *float64 {
 			if v == "" {
 				return nil
 			}
-			if f, err := strconv.ParseFloat(v, 64); err == nil {
+			var f float64
+			if _, err := fmt.Sscanf(v, "%f", &f); err == nil {
 				return &f
 			}
 		case int:
@@ -291,7 +323,8 @@ func getInt(data map[string]interface{}, key string) *int64 {
 			if v == "" {
 				return nil
 			}
-			if i, err := strconv.ParseInt(v, 10, 64); err == nil {
+			var i int64
+			if _, err := fmt.Sscanf(v, "%d", &i); err == nil {
 				return &i
 			}
 		case int:
