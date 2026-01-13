@@ -22,8 +22,8 @@ func (r *ProductRepository) Create(ctx context.Context, product *models.Product)
 	return r.db.WithContext(ctx).Create(product).Error
 }
 
-func (r *ProductRepository) List(ctx context.Context) ([]models.Product, error) {
-	var products []models.Product
+func (r *ProductRepository) List(ctx context.Context) ([]*models.Product, error) {
+	var products []*models.Product
 	err := r.db.WithContext(ctx).Find(&products).Error
 	return products, err
 }

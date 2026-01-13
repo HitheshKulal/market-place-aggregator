@@ -54,7 +54,7 @@ func (s *ProductService) GetProductsByTemplate(ctx context.Context, mappingID ui
 	result := make([]map[string]interface{}, 0, len(products))
 	for _, product := range products {
 		// Convert product struct to map first
-		productMap := s.productToMap(product)
+		productMap := s.productToMap(*product)
 
 		// Then transform according to template mapping
 		transformedProduct := s.transformProduct(productMap, mapping.FieldMap)
@@ -337,4 +337,8 @@ func getInt(data map[string]interface{}, key string) *int64 {
 		}
 	}
 	return nil
+}
+
+func (s *ProductService) Index(c *gin.Context) ([]*models.Product, error) {
+	return s.repo.List(c.Request.Context())
 }

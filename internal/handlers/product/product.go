@@ -1,7 +1,6 @@
 package product
 
 import (
-	"errors"
 	"go-backend-api/internal/handlers"
 	"go-backend-api/internal/services"
 	"net/http"
@@ -24,16 +23,20 @@ func (h *Handler) Index(c *gin.Context) {
 	templateID := handlers.UintQuery(c, "mappingId", 0)
 
 	if templateID == 0 {
-		handlers.BadRequest(c, errors.New("invalid mappingId"))
-		return
+		products, err := h.services.Product.Index(c)
+		if err != nil {
+			handlers.ErrorResponse(c, err)
+		}
+
+		handlers.SuccessResponse(c, products)
 	}
 
-	instances, err := h.services.Product.GetProductsByTemplate(c.Request.Context(), templateID)
+	products, err := h.services.Product.GetProductsByTemplate(c.Request.Context(), templateID)
 	if err != nil {
 		handlers.ErrorResponse(c, err)
 	}
 
-	handlers.SuccessResponse(c, instances)
+	handlers.SuccessResponse(c, products)
 }
 
 func (h *Handler) UploadAndStoreProducts(c *gin.Context) {
