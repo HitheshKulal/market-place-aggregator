@@ -19,12 +19,12 @@ func NewHandler(services *services.Services) *Handler {
 }
 
 func (h *Handler) Index(c *gin.Context) {
-	instances, err := h.services.Template.Index(c)
+	products, err := h.services.Template.Index(c)
 	if err != nil {
 		handlers.ErrorResponse(c, err)
 	}
 
-	handlers.SuccessResponse(c, instances)
+	handlers.SuccessResponse(c, products)
 }
 
 func (h *Handler) Store(c *gin.Context) {
