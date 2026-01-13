@@ -22,14 +22,14 @@ func (r *MappingRepository) Create(ctx context.Context, mapping *models.Mapping)
 	return r.db.WithContext(ctx).Create(mapping).Error
 }
 
-func (r *MappingRepository) FindByTemplateID(ctx context.Context, templateID uint) (*models.Mapping, error) {
-	var mapping models.Mapping
+func (r *MappingRepository) FindByID(ctx context.Context, id uint) (*models.Mapping, error) {
+	var mapping *models.Mapping
 	err := r.db.
 		WithContext(ctx).
-		Where("template_id = ?", templateID, true).
+		Where("id = ?", id).
 		First(&mapping).
 		Error
-	return &mapping, err
+	return mapping, err
 }
 
 func (r *MappingRepository) List(ctx context.Context) ([]*models.Mapping, error) {

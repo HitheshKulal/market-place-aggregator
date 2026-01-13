@@ -24,6 +24,6 @@ func (r *ProductRepository) Create(ctx context.Context, product *models.Product)
 
 func (r *ProductRepository) List(ctx context.Context) ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.WithContext(ctx).Where("is_active = ?", true).Find(&products).Error
+	err := r.db.WithContext(ctx).Find(&products).Error
 	return products, err
 }

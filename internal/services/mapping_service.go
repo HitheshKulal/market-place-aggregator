@@ -27,8 +27,8 @@ func NewMappingService(config *MappingServiceConfig) *MappingService {
 	}
 }
 
-func (s *MappingService) FindByTemplateID(ctx context.Context, templateID uint) (*models.Mapping, error) {
-	return s.repo.FindByTemplateID(ctx, templateID)
+func (s *MappingService) FindByID(ctx context.Context, templateID uint) (*models.Mapping, error) {
+	return s.repo.FindByID(ctx, templateID)
 }
 
 func (s *MappingService) Index(c *gin.Context) ([]*models.Mapping, error) {

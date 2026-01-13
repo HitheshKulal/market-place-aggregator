@@ -32,7 +32,7 @@ func SetupRoutes(r *gin.Engine, services *service.Services) {
 	public := r.Group("/api/v1")
 	products := public.Group("products")
 	{
-		products.GET("/:id", productHandler.Index)
+		products.GET("/", productHandler.Index)
 	}
 
 	template := public.Group("templates")

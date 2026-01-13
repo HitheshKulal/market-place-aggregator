@@ -1,6 +1,7 @@
 package product
 
 import (
+	"errors"
 	"go-backend-api/internal/handlers"
 	"go-backend-api/internal/services"
 	"net/http"
@@ -20,7 +21,13 @@ func NewHandler(services *services.Services) *Handler {
 }
 
 func (h *Handler) Index(c *gin.Context) {
-	templateID := handlers.UintQuery(c, "templateId", 0)
+	templateID := handlers.UintQuery(c, "mappingId", 0)
+
+	if templateID == 0 {
+		handlers.BadRequest(c, errors.New("invalid mappingId"))
+		return
+	}
+
 	instances, err := h.services.Product.GetProductsByTemplate(c.Request.Context(), templateID)
 	if err != nil {
 		handlers.ErrorResponse(c, err)

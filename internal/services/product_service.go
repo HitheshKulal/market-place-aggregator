@@ -38,9 +38,9 @@ func NewProductService(config *ProductServiceConfig) *ProductService {
 // Input: templateID
 // Output: list of products with data transformed according to template format
 // Example: [{"name":"Iphone", "price":551511}] -> [{"title":"Iphone", "price":551511}]
-func (s *ProductService) GetProductsByTemplate(ctx context.Context, templateID uint) ([]map[string]interface{}, error) {
+func (s *ProductService) GetProductsByTemplate(ctx context.Context, mappingID uint) ([]map[string]interface{}, error) {
 	// Get mapping for this template
-	mapping, err := s.services.Mapping.FindByTemplateID(ctx, templateID)
+	mapping, err := s.services.Mapping.FindByID(ctx, mappingID)
 	if err != nil {
 		return nil, errors.New("no mapping found for template")
 	}
@@ -54,20 +54,53 @@ func (s *ProductService) GetProductsByTemplate(ctx context.Context, templateID u
 	// Transform all products according to mapping
 	result := make([]map[string]interface{}, 0, len(products))
 	for _, product := range products {
-		transformedProduct := s.transformProduct(product.Data, mapping.FieldMap)
+		// Convert product struct to map first
+		productMap := s.productToMap(product)
+
+		// Then transform according to template mapping
+		transformedProduct := s.transformProduct(productMap, mapping.FieldMap)
 		result = append(result, transformedProduct)
 	}
 
 	return result, nil
 }
 
+// productToMap converts Product struct fields to a map
+func (s *ProductService) productToMap(product models.Product) map[string]interface{} {
+	productMap := make(map[string]interface{})
+
+	productMap["sku"] = product.SKU
+	productMap["name"] = product.Name
+	productMap["brand_name"] = product.BrandName
+	productMap["gender"] = product.Gender
+	productMap["category"] = product.Category
+	productMap["color"] = product.Color
+	productMap["size"] = product.Size
+	productMap["material"] = product.Material
+	productMap["image1"] = product.Image1
+	productMap["image2"] = product.Image2
+	productMap["description"] = product.Description
+	productMap["mrp"] = product.MRP
+	productMap["price"] = product.Price
+	productMap["quantity"] = product.Quantity
+
+	// Merge additional data from JSONB field
+	for key, value := range product.Data {
+		// Don't override existing mapped fields
+		if _, exists := productMap[key]; !exists {
+			productMap[key] = value
+		}
+	}
+
+	return productMap
+}
+
 // transformProduct applies field mapping to a single product
-// fieldMap can be either {"title":"name"} or {"name":"title"} depending on direction
 func (s *ProductService) transformProduct(productData map[string]interface{}, fieldMap map[string]string) map[string]interface{} {
 	result := make(map[string]interface{})
 
 	// fieldMap format: {"templateField":"productField"}
-	// e.g., {"title":"name", "price":"price"}
+	// e.g., {"productName":"name", "brand":"brand_name"}
 	for templateField, productField := range fieldMap {
 		if value, exists := productData[productField]; exists {
 			result[templateField] = value
