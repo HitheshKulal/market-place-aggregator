@@ -216,7 +216,7 @@ INSERT INTO mappings (template_id, field_map) VALUES
 
 ### Base URL
 ```
-http://localhost:8080/api/v1
+http://localhost:8082/api/v1
 ```
 
 ### Endpoints
@@ -235,23 +235,58 @@ GET /api/v1/products/
   "data": [
     {
       "id": 1,
-      "sku": "IPHONE-15-001",
+      "sku": "IPHONE-15-PRO-001",
       "name": "iPhone 15 Pro",
       "brandName": "Apple",
       "gender": "Unisex",
       "category": "Electronics",
-      "color": "Titanium",
+      "color": "Natural Titanium",
       "size": "256GB",
       "mrp": 1199.99,
       "price": 999.99,
       "material": "Titanium",
-      "image1": "https://example.com/image1.jpg",
-      "image2": "https://example.com/image2.jpg",
+      "image1": "https://example.com/iphone15pro-1.jpg",
+      "image2": "https://example.com/iphone15pro-2.jpg",
       "quantity": 50,
-      "description": "Latest iPhone",
+      "description": "Latest iPhone with A17 Pro chip and titanium design",
       "data": {},
       "createdAt": "2024-01-12T10:00:00Z",
       "updatedAt": "2024-01-12T10:00:00Z"
+    }
+  ],
+  "statusCode": 200
+}
+```
+
+##### Get Products by Mapping (Transformed)
+```http
+GET /api/v1/products?mappingId=:id
+```
+
+**Example:**
+```http
+GET /api/v1/products?mappingId=5
+```
+
+**Response (Products transformed according to the mapping's template):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "productName": "iPhone 15 Pro",
+      "brand": "Apple",
+      "gender": "Unisex",
+      "category": "Electronics",
+      "color": "Natural Titanium",
+      "size": "256GB",
+      "mrp": 1199.99,
+      "price": 999.99,
+      "sku": "IPHONE-15-PRO-001",
+      "description": "Latest iPhone with A17 Pro chip and titanium design",
+      "material": "Titanium",
+      "images": "https://example.com/iphone15pro-1.jpg"
     }
   ],
   "statusCode": 200
@@ -266,7 +301,7 @@ Content-Type: multipart/form-data
 
 **Request:**
 ```
-file: products.csv (form-data)
+file: product_data.csv (form-data)
 ```
 
 **Sample CSV Format:**
@@ -288,33 +323,42 @@ DYSON-V15-001,Dyson V15 Detect,Dyson,Unisex,Home Appliances,Nickel/Iron,Standard
 ```json
 {
   "success": true,
-  "message": "Products uploaded and stored",
+  "message": "Products uploaded and stored successfully",
   "data": {
-    "fileName": "products.csv",
+    "fileName": "product_data.csv",
     "totalRows": 10,
-    "successCount": 9,
-    "failedCount": 1,
+    "successCount": 1,
+    "failedCount": 9,
     "discoveredColumns": [
       "sku",
       "name",
       "brand_name",
+      "gender",
+      "category",
+      "color",
+      "size",
+      "mrp",
       "price",
-      "quantity"
+      "material",
+      "image1",
+      "image2",
+      "quantity",
+      "description"
     ],
     "sampleProducts": [
       {
-        "id": 1,
-        "sku": "IPHONE-001",
-        "name": "iPhone 15 Pro",
-        "price": 999.99,
-        "quantity": 50
+        "id": 39,
+        "sku": "ADIDAS-ULTRA-001",
+        "name": "Adidas Ultraboost 22",
+        "price": 169.99,
+        "quantity": 150
       }
     ],
     "errors": [
       {
-        "row": 5,
-        "sku": "DUPLICATE-SKU",
-        "message": "Database error: duplicate key value violates unique constraint"
+        "row": 2,
+        "sku": "IPHONE-15-PRO-001",
+        "message": "Database error: ERROR: duplicate key value violates unique constraint \"uni_products_sku\" (SQLSTATE 23505)"
       }
     ]
   },
@@ -341,8 +385,8 @@ GET /api/v1/templates/
   "success": true,
   "data": [
     {
-      "id": 1,
-      "name": "Flipkart Template",
+      "id": 4,
+      "name": "Flipkart Template 1",
       "fields": [
         "productName",
         "brand",
@@ -357,8 +401,8 @@ GET /api/v1/templates/
         "material",
         "images"
       ],
-      "createdAt": "2024-01-12T10:00:00Z",
-      "updatedAt": "2024-01-12T10:00:00Z"
+      "createdAt": "2026-01-13T04:33:17.145573385Z",
+      "updatedAt": "2026-01-13T04:33:17.145573448Z"
     }
   ],
   "statusCode": 200
@@ -374,15 +418,21 @@ Content-Type: application/json
 **Request Body:**
 ```json
 {
-  "name": "Amazon Template",
+  "name": "Flipkart Template 1",
   "fields": [
-    "title",
+    "productName",
     "brand",
+    "gender",
+    "category",
+    "color",
+    "size",
+    "mrp",
     "price",
-    "quantity",
-    "description"
-  ],
-  "isActive": true
+    "sku",
+    "description",
+    "material",
+    "images"
+  ]
 }
 ```
 
@@ -391,17 +441,24 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "id": 2,
-    "name": "Amazon Template",
+    "id": 4,
+    "name": "Flipkart Template 1",
     "fields": [
-      "title",
+      "productName",
       "brand",
+      "gender",
+      "category",
+      "color",
+      "size",
+      "mrp",
       "price",
-      "quantity",
-      "description"
+      "sku",
+      "description",
+      "material",
+      "images"
     ],
-    "createdAt": "2024-01-12T10:30:00Z",
-    "updatedAt": "2024-01-12T10:30:00Z"
+    "createdAt": "2026-01-13T04:33:17.145573385Z",
+    "updatedAt": "2026-01-13T04:33:17.145573448Z"
   },
   "statusCode": 200
 }
@@ -420,8 +477,8 @@ GET /api/v1/mappings/
   "success": true,
   "data": [
     {
-      "id": 1,
-      "templateId": 1,
+      "id": 5,
+      "templateId": 4,
       "fieldMap": {
         "productName": "name",
         "brand": "brand_name",
@@ -434,17 +491,27 @@ GET /api/v1/mappings/
         "sku": "sku",
         "description": "description",
         "material": "material",
-        "images": "image1"
+        "images": "image1",
+        "id": "id"
       },
-      "createdAt": "2024-01-12T10:00:00Z",
-      "updatedAt": "2024-01-12T10:00:00Z",
+      "createdAt": "2026-01-13T04:50:44.977717894Z",
+      "updatedAt": "2026-01-13T04:50:44.977717976Z",
       "template": {
-        "id": 1,
-        "name": "Flipkart Template",
+        "id": 4,
+        "name": "Flipkart Template 1",
         "fields": [
           "productName",
           "brand",
-          "price"
+          "gender",
+          "category",
+          "color",
+          "size",
+          "mrp",
+          "price",
+          "sku",
+          "description",
+          "material",
+          "images"
         ]
       }
     }
@@ -462,12 +529,21 @@ Content-Type: application/json
 **Request Body:**
 ```json
 {
-  "templateId": 1,
+  "templateId": 4,
   "fieldMap": {
     "productName": "name",
     "brand": "brand_name",
+    "gender": "gender",
+    "category": "category",
+    "color": "color",
+    "size": "size",
+    "mrp": "mrp",
     "price": "price",
-    "quantity": "quantity"
+    "sku": "sku",
+    "description": "description",
+    "material": "material",
+    "images": "image1",
+    "id": "id"
   }
 }
 ```
@@ -477,16 +553,25 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "id": 2,
-    "templateId": 1,
+    "id": 5,
+    "templateId": 4,
     "fieldMap": {
-      "productName": "name",
       "brand": "brand_name",
+      "category": "category",
+      "color": "color",
+      "description": "description",
+      "gender": "gender",
+      "id": "id",
+      "images": "image1",
+      "material": "material",
+      "mrp": "mrp",
       "price": "price",
-      "quantity": "quantity"
+      "productName": "name",
+      "size": "size",
+      "sku": "sku"
     },
-    "createdAt": "2024-01-12T10:45:00Z",
-    "updatedAt": "2024-01-12T10:45:00Z"
+    "createdAt": "2026-01-13T04:50:44.977717894Z",
+    "updatedAt": "2026-01-13T04:50:44.977717976Z"
   },
   "statusCode": 200
 }
@@ -494,12 +579,12 @@ Content-Type: application/json
 
 ##### Get Products by Template (Transformed)
 ```http
-GET /api/v1/mappings/:id/products
+GET /api/v1/products?mappingId=:id
 ```
 
 **Example:**
 ```http
-GET /api/v1/mappings/1/products
+GET /api/v1/products?mappingId=5
 ```
 
 **Response (Products transformed according to Flipkart template):**
@@ -508,32 +593,19 @@ GET /api/v1/mappings/1/products
   "success": true,
   "data": [
     {
+      "id": 1,
       "productName": "iPhone 15 Pro",
       "brand": "Apple",
       "gender": "Unisex",
       "category": "Electronics",
-      "color": "Titanium",
+      "color": "Natural Titanium",
       "size": "256GB",
       "mrp": 1199.99,
       "price": 999.99,
-      "sku": "IPHONE-15-001",
-      "description": "Latest iPhone",
+      "sku": "IPHONE-15-PRO-001",
+      "description": "Latest iPhone with A17 Pro chip and titanium design",
       "material": "Titanium",
-      "images": "https://example.com/image1.jpg"
-    },
-    {
-      "productName": "Galaxy S24",
-      "brand": "Samsung",
-      "gender": "Unisex",
-      "category": "Electronics",
-      "color": "Black",
-      "size": "128GB",
-      "mrp": 999.99,
-      "price": 899.99,
-      "sku": "SAMSUNG-001",
-      "description": "Galaxy AI smartphone",
-      "material": "Glass",
-      "images": "https://example.com/image2.jpg"
+      "images": "https://example.com/iphone15pro-1.jpg"
     }
   ],
   "statusCode": 200
@@ -578,7 +650,7 @@ DB_NAME=product_db
 DB_SSLMODE=disable
 
 # Server
-PORT=8080
+PORT=8082
 GIN_MODE=debug
 
 # Application
@@ -603,7 +675,7 @@ psql -U postgres -c "CREATE DATABASE product_db;"
 go run cmd/server/main.go
 ```
 
-The server will start at `http://localhost:8080`
+The server will start at `http://localhost:8082`
 
 ---
 
@@ -626,7 +698,7 @@ DB_PASSWORD=postgres
 DB_NAME=product_db
 DB_SSLMODE=disable
 
-PORT=8080
+PORT=8082
 GIN_MODE=release
 APP_ENV=production
 ```
@@ -651,7 +723,7 @@ docker-compose down -v
 
 #### 3. Access the application
 ```
-API: http://localhost:8080
+API: http://localhost:8082
 Database: localhost:5432
 ```
 
@@ -698,11 +770,11 @@ Coverage:            ~42% of statements
 sudo apt-get install apache2-utils
 
 # Test product upload endpoint
-ab -n 100 -c 10 -p products.csv -T 'multipart/form-data' \
-  http://localhost:8080/api/v1/products/upload
+ab -n 100 -c 10 -p product_data.csv -T 'multipart/form-data' \
+  http://localhost:8082/api/v1/products/upload
 
 # Test get products endpoint
-ab -n 1000 -c 50 http://localhost:8080/api/v1/products/
+ab -n 1000 -c 50 http://localhost:8082/api/v1/products/
 ```
 
 ---
@@ -713,48 +785,70 @@ ab -n 1000 -c 50 http://localhost:8080/api/v1/products/
 
 #### Step 1: Create a Template
 ```bash
-curl -X POST http://localhost:8080/api/v1/templates/ \
+curl -X POST http://localhost:8082/api/v1/templates/ \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Flipkart Template",
-    "fields": ["productName", "brand", "price", "sku"]
+    "name": "Flipkart Template 1",
+    "fields": [
+      "productName",
+      "brand",
+      "gender",
+      "category",
+      "color",
+      "size",
+      "mrp",
+      "price",
+      "sku",
+      "description",
+      "material",
+      "images"
+    ]
   }'
 ```
 
 #### Step 2: Create a Mapping
 ```bash
-curl -X POST http://localhost:8080/api/v1/mappings/ \
+curl -X POST http://localhost:8082/api/v1/mappings/ \
   -H "Content-Type: application/json" \
   -d '{
-    "templateId": 1,
+    "templateId": 4,
     "fieldMap": {
       "productName": "name",
       "brand": "brand_name",
+      "gender": "gender",
+      "category": "category",
+      "color": "color",
+      "size": "size",
+      "mrp": "mrp",
       "price": "price",
-      "sku": "sku"
+      "sku": "sku",
+      "description": "description",
+      "material": "material",
+      "images": "image1",
+      "id": "id"
     }
   }'
 ```
 
 #### Step 3: Upload Products
 ```bash
-curl -X POST http://localhost:8080/api/v1/products/upload \
-  -F "file=@products.csv"
+curl -X POST http://localhost:8082/api/v1/products/upload \
+  -F "file=@product_data.csv"
 ```
 
 #### Step 4: Get Transformed Products
 ```bash
-curl -X GET http://localhost:8080/api/v1/mappings/1/products
+curl -X GET http://localhost:8082/api/v1/products?mappingId=5
 ```
 
 ### Sample CSV File
 
-Create `products.csv`:
+Create `product_data.csv`:
 ```csv
-sku,name,brand_name,price,quantity,category
-IPHONE-001,iPhone 15 Pro,Apple,999.99,50,Electronics
-SAMSUNG-001,Galaxy S24,Samsung,899.99,75,Electronics
-SONY-001,WH-1000XM5,Sony,349.99,120,Audio
+sku,name,brand_name,gender,category,color,size,mrp,price,material,image1,image2,quantity,description
+IPHONE-15-PRO-001,iPhone 15 Pro,Apple,Unisex,Electronics,Natural Titanium,256GB,1199.99,999.99,Titanium,https://example.com/iphone15pro-1.jpg,https://example.com/iphone15pro-2.jpg,50,Latest iPhone with A17 Pro chip and titanium design
+SAMSUNG-S24-001,Samsung Galaxy S24,Samsung,Unisex,Electronics,Phantom Black,128GB,999.99,899.99,Glass & Aluminum,https://example.com/galaxys24-1.jpg,https://example.com/galaxys24-2.jpg,75,Galaxy AI-powered smartphone
+ADIDAS-ULTRA-001,Adidas Ultraboost 22,Adidas,Women,Footwear,Core Black,US 8,189.99,169.99,Primeknit,https://example.com/ultraboost-1.jpg,https://example.com/ultraboost-2.jpg,150,Premium running shoes
 ```
 
 ### Postman Collection
@@ -788,10 +882,17 @@ Import the following JSON into Postman:
                 {
                   "key": "file",
                   "type": "file",
-                  "src": "/path/to/products.csv"
+                  "src": "/path/to/product_data.csv"
                 }
               ]
             }
+          }
+        },
+        {
+          "name": "Get Products by Mapping",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/products?mappingId=5"
           }
         }
       ]
@@ -819,7 +920,7 @@ Import the following JSON into Postman:
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Flipkart Template\",\n  \"fields\": [\"productName\", \"brand\", \"price\"]\n}"
+              "raw": "{\n  \"name\": \"Flipkart Template 1\",\n  \"fields\": [\n    \"productName\",\n    \"brand\",\n    \"gender\",\n    \"category\",\n    \"color\",\n    \"size\",\n    \"mrp\",\n    \"price\",\n    \"sku\",\n    \"description\",\n    \"material\",\n    \"images\"\n  ]\n}"
             }
           }
         }
@@ -848,15 +949,15 @@ Import the following JSON into Postman:
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"templateId\": 1,\n  \"fieldMap\": {\n    \"productName\": \"name\",\n    \"brand\": \"brand_name\",\n    \"price\": \"price\"\n  }\n}"
+              "raw": "{\n  \"templateId\": 4,\n  \"fieldMap\": {\n    \"productName\": \"name\",\n    \"brand\": \"brand_name\",\n    \"gender\": \"gender\",\n    \"category\": \"category\",\n    \"color\": \"color\",\n    \"size\": \"size\",\n    \"mrp\": \"mrp\",\n    \"price\": \"price\",\n    \"sku\": \"sku\",\n    \"description\": \"description\",\n    \"material\": \"material\",\n    \"images\": \"image1\",\n    \"id\": \"id\"\n  }\n}"
             }
           }
         },
         {
-          "name": "Get Products by Template",
+          "name": "Get Products by Mapping",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}/mappings/1/products"
+            "url": "{{base_url}}/products?mappingId=5"
           }
         }
       ]
@@ -865,7 +966,7 @@ Import the following JSON into Postman:
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8080/api/v1"
+      "value": "http://localhost:8082/api/v1"
     }
   ]
 }
@@ -891,14 +992,14 @@ psql -h localhost -U postgres -d product_db
 
 #### Port Already in Use
 ```bash
-# Find process using port 8080
-lsof -i :8080
+# Find process using port 8082
+lsof -i :8082
 
 # Kill the process
 kill -9 <PID>
 
 # Or use different port in .env
-PORT=8081
+PORT=8083
 ```
 
 #### CSV Upload Fails
