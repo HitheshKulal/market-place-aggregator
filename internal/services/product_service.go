@@ -69,6 +69,7 @@ func (s *ProductService) GetProductsByTemplate(ctx context.Context, mappingID ui
 func (s *ProductService) productToMap(product models.Product) map[string]interface{} {
 	productMap := make(map[string]interface{})
 
+	productMap["id"] = product.ID
 	productMap["sku"] = product.SKU
 	productMap["name"] = product.Name
 	productMap["brand_name"] = product.BrandName
