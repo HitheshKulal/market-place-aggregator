@@ -33,6 +33,7 @@ func SetupRoutes(r *gin.Engine, services *service.Services) {
 	products := public.Group("products")
 	{
 		products.GET("/", productHandler.Index)
+		products.POST("/upload", productHandler.UploadAndStoreProducts)
 	}
 
 	template := public.Group("templates")
