@@ -271,9 +271,17 @@ file: products.csv (form-data)
 
 **Sample CSV Format:**
 ```csv
-sku,name,brand_name,price,quantity,category
-IPHONE-001,iPhone 15 Pro,Apple,999.99,50,Electronics
-SAMSUNG-001,Galaxy S24,Samsung,899.99,75,Electronics
+sku,name,brand_name,gender,category,color,size,mrp,price,material,image1,image2,quantity,description
+IPHONE-15-PRO-001,iPhone 15 Pro,Apple,Unisex,Electronics,Natural Titanium,256GB,1199.99,999.99,Titanium,https://example.com/iphone15pro-1.jpg,https://example.com/iphone15pro-2.jpg,50,Latest iPhone with A17 Pro chip and titanium design. Features advanced camera system and action button.
+SAMSUNG-S24-001,Samsung Galaxy S24,Samsung,Unisex,Electronics,Phantom Black,128GB,999.99,899.99,Glass & Aluminum,https://example.com/galaxys24-1.jpg,https://example.com/galaxys24-2.jpg,75,Galaxy AI-powered smartphone with Snapdragon 8 Gen 3 processor and advanced camera features.
+SONY-WH1000XM5-001,Sony WH-1000XM5,Sony,Unisex,Audio,Black,One Size,399.99,349.99,Plastic & Leather,https://example.com/sonywh1000xm5-1.jpg,https://example.com/sonywh1000xm5-2.jpg,120,Industry-leading noise canceling headphones with 30-hour battery life and premium sound quality.
+MACBOOK-PRO-16-001,MacBook Pro 16,Apple,Unisex,Computers,Space Black,M3 Pro,2999.99,2499.99,Aluminum,https://example.com/macbookpro16-1.jpg,https://example.com/macbookpro16-2.jpg,30,16-inch MacBook Pro with M3 Pro chip. Perfect for professional creative work and development.
+NIKE-AIR-MAX-001,Nike Air Max 90,Nike,Men,Footwear,White/Black,US 10,149.99,129.99,Leather & Mesh,https://example.com/nikeairmax-1.jpg,https://example.com/nikeairmax-2.jpg,200,Classic Nike Air Max 90 sneakers with iconic design and comfortable Air cushioning technology.
+ADIDAS-ULTRA-001,Adidas Ultraboost 22,Adidas,Women,Footwear,Core Black,US 8,189.99,169.99,Primeknit,https://example.com/ultraboost-1.jpg,https://example.com/ultraboost-2.jpg,150,Premium running shoes with responsive Boost cushioning and flexible Primeknit upper.
+LEVI-JEANS-001,Levi's 501 Original Jeans,Levi's,Men,Clothing,Dark Blue,32x32,79.99,69.99,Denim,https://example.com/levis501-1.jpg,https://example.com/levis501-2.jpg,300,Classic straight-fit jeans with button fly. Original since 1873. Premium denim construction.
+ZARA-DRESS-001,Zara Floral Summer Dress,Zara,Women,Clothing,Floral Print,M,89.99,59.99,Cotton & Polyester,https://example.com/zaradress-1.jpg,https://example.com/zaradress-2.jpg,180,Elegant floral print summer dress with flowing silhouette. Perfect for casual and semi-formal occasions.
+KINDLE-PAPER-001,Kindle Paperwhite,Amazon,Unisex,Electronics,Black,8GB,139.99,119.99,Plastic,https://example.com/kindle-1.jpg,https://example.com/kindle-2.jpg,250,Waterproof e-reader with 6.8-inch display and adjustable warm light. Store thousands of books.
+DYSON-V15-001,Dyson V15 Detect,Dyson,Unisex,Home Appliances,Nickel/Iron,Standard,749.99,649.99,Plastic & Metal,https://example.com/dysonv15-1.jpg,https://example.com/dysonv15-2.jpg,45,Cordless vacuum with laser detection and intelligent cleaning. Up to 60 minutes of run time.
 ```
 
 **Response:**
