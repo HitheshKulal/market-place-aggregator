@@ -36,7 +36,7 @@ CSV Upload → Parse → Validate → Map → Store → Transform → Output
 ## Database Schema
 
 ![alt text](docs/images/schema.png)
-```
+
 
 ### Relationship Details
 
