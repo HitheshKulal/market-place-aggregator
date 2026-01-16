@@ -406,6 +406,7 @@ Content-Type: application/json
   "data": {
     "id": 5,
     "templateId": 4,
+      "sellerId":1,
     "fieldMap": {
       "brand": "brand_name",
       "category": "category",
