@@ -144,7 +144,7 @@ GET /api/v1/products?mappingId=5
 
 ##### Upload Products (CSV)
 ```http
-POST /api/v1/products/upload
+POST /api/v1/products/upload?sellerName=test
 Content-Type: multipart/form-data
 ```
 
@@ -379,6 +379,7 @@ Content-Type: application/json
 ```json
 {
   "templateId": 4,
+  "sellerId":1,
   "fieldMap": {
     "productName": "name",
     "brand": "brand_name",
@@ -625,7 +626,7 @@ curl -X POST http://localhost:8082/api/v1/mappings/ \
 
 #### Step 3: Upload Products
 ```bash
-curl -X POST http://localhost:8082/api/v1/products/upload \
+curl -X POST "http://localhost:8082/api/v1/products/upload?sellerName=test" \
   -F "file=@product_data.csv"
 ```
 
@@ -742,8 +743,7 @@ Import the following JSON into Postman:
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"templateId\": 4,\n  \"fieldMap\": {\n    \"productName\": \"name\",\n    \"brand\": \"brand_name\",\n    \"gender\": \"gender\",\n    \"category\": \"category\",\n    \"color\": \"color\",\n    \"size\": \"size\",\n    \"mrp\": \"mrp\",\n    \"price\": \"price\",\n    \"sku\": \"sku\",\n    \"description\": \"description\",\n    \"material\": \"material\",\n    \"images\": \"image1\",\n    \"id\": \"id\"\n  }\n}"
-            }
+              "raw": "{\n  \"templateId\": 4,\n  \"productId\": 1,\n  \"fieldMap\": {\n    \"productName\": \"name\",\n    \"brand\": \"brand_name\",\n    \"gender\": \"gender\",\n    \"category\": \"category\",\n    \"color\": \"color\",\n    \"size\": \"size\",\n    \"mrp\": \"mrp\",\n    \"price\": \"price\",\n    \"sku\": \"sku\",\n    \"description\": \"description\",\n    \"material\": \"material\",\n    \"images\": \"image1\",\n    \"id\": \"id\"\n  }\n}"
           }
         },
         {
