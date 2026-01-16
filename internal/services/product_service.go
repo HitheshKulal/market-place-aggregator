@@ -33,11 +33,11 @@ func NewProductService(config *ProductServiceConfig) *ProductService {
 	}
 }
 
-// GetProductsByTemplate transforms all products according to a specific template mapping
-// Input: templateID
+// GetProductsByMapping transforms all products according to a specific template mapping
+// Input: mappingID
 // Output: list of products with data transformed according to template format
 // Example: [{"name":"Iphone", "price":551511}] -> [{"title":"Iphone", "price":551511}]
-func (s *ProductService) GetProductsByTemplate(ctx context.Context, mappingID uint) ([]map[string]interface{}, error) {
+func (s *ProductService) GetProductsByMapping(ctx context.Context, mappingID uint) ([]map[string]interface{}, error) {
 	// Get mapping for this template
 	mapping, err := s.services.Mapping.FindByID(ctx, mappingID)
 	if err != nil {
@@ -45,7 +45,7 @@ func (s *ProductService) GetProductsByTemplate(ctx context.Context, mappingID ui
 	}
 
 	// Get all products
-	products, err := s.repo.List(ctx)
+	products, err := s.repo.GetBySellerID(ctx, mapping.SellerID)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,15 @@ func (s *ProductService) transformProduct(productData map[string]interface{}, fi
 	return result
 }
 
-func (s *ProductService) UploadAndStoreProducts(c *gin.Context, file multipart.File, filename string) (*requests.UploadProductsResponse, error) {
+func (s *ProductService) UploadAndStoreProducts(c *gin.Context, file multipart.File, filename string, sellerName string) (*requests.UploadProductsResponse, error) {
+	seller := &models.Seller{
+		Name: sellerName,
+	}
+
+	err := s.services.Seller.Create(c.Request.Context(), seller)
+	if err != nil {
+		return nil, err
+	}
 	// Step 1: Extract CSV data
 	headers, dataRows, err := s.extractCSVData(file)
 	if err != nil {
@@ -155,6 +163,7 @@ func (s *ProductService) UploadAndStoreProducts(c *gin.Context, file multipart.F
 	var createdProducts []map[string]interface{}
 
 	for i, product := range validatedProducts {
+		product.SellerID = seller.ID
 		err := s.repo.Create(c.Request.Context(), product)
 		if err != nil {
 			response.FailedCount++

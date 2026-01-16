@@ -29,6 +29,9 @@ type Product struct {
 	CreatedAt   time.Time      `json:"createdAt"`
 	UpdatedAt   time.Time      `json:"updatedAt"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
+
+	SellerID uint    `gorm:"index;not null;" json:"sellerId"` // mapping for seller
+	Seller   *Seller `gorm:"foreignKey:SellerID;constraint:OnDelete:CASCADE" json:"seller,omitempty"`
 }
 
 // JSONMap is a custom type for map[string]interface{} that works with JSONB

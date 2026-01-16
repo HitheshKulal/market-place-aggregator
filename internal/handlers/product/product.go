@@ -20,18 +20,19 @@ func NewHandler(services *services.Services) *Handler {
 }
 
 func (h *Handler) Index(c *gin.Context) {
-	templateID := handlers.UintQuery(c, "mappingId", 0)
+	mappingID := handlers.UintQuery(c, "mappingId", 0)
 
-	if templateID == 0 {
+	if mappingID == 0 {
 		products, err := h.services.Product.Index(c)
 		if err != nil {
 			handlers.ErrorResponse(c, err)
 		}
 
 		handlers.SuccessResponse(c, products)
+		return
 	}
 
-	products, err := h.services.Product.GetProductsByTemplate(c.Request.Context(), templateID)
+	products, err := h.services.Product.GetProductsByMapping(c.Request.Context(), mappingID)
 	if err != nil {
 		handlers.ErrorResponse(c, err)
 	}
@@ -54,8 +55,10 @@ func (h *Handler) UploadAndStoreProducts(c *gin.Context) {
 		return
 	}
 
+	sellerName := handlers.StringQuery(c, "sellerName", "")
+
 	// Parse and store products in one go
-	result, err := h.services.Product.UploadAndStoreProducts(c, file, header.Filename)
+	result, err := h.services.Product.UploadAndStoreProducts(c, file, header.Filename, sellerName)
 	if err != nil {
 		handlers.ErrorResponse(c, err)
 		return

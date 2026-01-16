@@ -8,6 +8,7 @@ type Services struct {
 	Product  *ProductService
 	Template *TemplateService
 	Mapping  *MappingService
+	Seller   *SellerService
 }
 
 type ServiceConfig struct {
@@ -28,6 +29,11 @@ func NewServices(config *ServiceConfig) *Services {
 	})
 
 	services.Mapping = NewMappingService(&MappingServiceConfig{
+		Repositories: config.Repositories,
+		Services:     services,
+	})
+
+	services.Seller = NewSellerService(&SellerServiceConfig{
 		Repositories: config.Repositories,
 		Services:     services,
 	})

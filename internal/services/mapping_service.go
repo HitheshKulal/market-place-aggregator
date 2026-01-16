@@ -38,6 +38,7 @@ func (s *MappingService) Index(c *gin.Context) ([]*models.Mapping, error) {
 func (s *MappingService) Store(c *gin.Context, req requests.CreateMappingRequest) (*models.Mapping, error) {
 	template := &models.Mapping{
 		TemplateID: req.TemplateID,
+		SellerID:   req.SellerID,
 		FieldMap:   req.FieldMap,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),

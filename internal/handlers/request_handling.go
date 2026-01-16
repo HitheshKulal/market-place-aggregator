@@ -28,3 +28,11 @@ func UintQuery(c *gin.Context, param string, defaultValue uint) uint {
 
 	return uint(value)
 }
+
+func StringQuery(c *gin.Context, param string, defaultValue string) string {
+	value := c.Query(param)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}

@@ -12,12 +12,14 @@ import (
 type Mapping struct {
 	ID         uint           `gorm:"primaryKey" json:"id"`
 	TemplateID uint           `gorm:"index;not null;" json:"templateId"`   // One mapping per template
+	SellerID   uint           `gorm:"index;not null;" json:"sellerId"`     // One mapping per template
 	FieldMap   StringMap      `gorm:"type:jsonb;not null" json:"fieldMap"` // {"title":"name", "price":"price", "quantity":"quantity"}
 	CreatedAt  time.Time      `json:"createdAt"`
 	UpdatedAt  time.Time      `json:"updatedAt"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 
 	Template *Template `gorm:"foreignKey:TemplateID;constraint:OnDelete:CASCADE" json:"template,omitempty"`
+	Seller   *Seller   `gorm:"foreignKey:SellerID;constraint:OnDelete:CASCADE" json:"seller,omitempty"`
 }
 
 // StringMap is a custom type for map[string]string that works with JSONB

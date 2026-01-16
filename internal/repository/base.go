@@ -24,6 +24,7 @@ type Repositories struct {
 	Product  *ProductRepository
 	Template *TemplateRepository
 	Mapping  *MappingRepository
+	Seller   *SellerRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -31,5 +32,6 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Product:  NewProductRepository(db),
 		Template: NewTemplateRepository(db),
 		Mapping:  NewMappingRepository(db),
+		Seller:   NewSellerRepository(db),
 	}
 }

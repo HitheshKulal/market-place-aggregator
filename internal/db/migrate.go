@@ -36,6 +36,12 @@ func RunMigrations(db *gorm.DB) error {
 				return models.AutoMigrateTemplate(db)
 			},
 		},
+		{
+			name: "create_seller_table",
+			migrator: func(db *gorm.DB) error {
+				return models.AutoMigrateSeller(db)
+			},
+		},
 	}
 
 	for _, migration := range migrations {
