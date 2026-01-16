@@ -328,6 +328,7 @@ GET /api/v1/mappings/
     {
       "id": 5,
       "templateId": 4,
+      "sellerId":1,
       "fieldMap": {
         "productName": "name",
         "brand": "brand_name",
